@@ -74,7 +74,7 @@ public class EjerciciosPlantilla {
                 }
             } while (productStock[i] < 0);
 
-            inventoryValue = inventoryValue + productPrice[i];
+            inventoryValue = inventoryValue + (productPrice[i] * productStock[i]);
         }
 
         // Ingresar las ventas del día.
@@ -93,61 +93,72 @@ public class EjerciciosPlantilla {
         } while (productsSoldInDay < 0);
 
         String productSoldNameHistory[] = new String[productsSoldInDay];
+        
+        // Historial de productos vendido por cada venta.
+        int productSoldQuantityHistory[] = new int[productsSoldInDay]; 
+
         // Solicitar el nombre del producto vendido en cada venta y
         // la cantidadvendida.
-            for (int i = 0; i < productsSoldInDay; i++) {
-                System.out.println("Venta N° " + (i + 1));
-                System.out.println("Ingrese el nombre del producto vendido de esta lista: ");
+        for (int i = 0; i < productsSoldInDay; i++) {
+            System.out.println("Venta N° " + (i + 1));
+            System.out.println("Ingrese el nombre del producto vendido de esta lista: ");
+            for (int j = 0; j < numProducts; j++) {
+                System.out.print(productName[j] + "; ");
+            }
+            System.out.println("");
+
+            while (!scanner.hasNext("[a-zA-Z]+")) {
+                System.out.println("¡Nombre Inválido!");
+                System.out.println("Ingrese un nombre del"
+                        + " siguiente listado: ");
                 for (int j = 0; j < numProducts; j++) {
                     System.out.print(productName[j] + "; ");
                 }
-                System.out.println("");
+                scanner.next();
+            }
 
-                while (!scanner.hasNext("[a-zA-Z]+")) {
-                    System.out.println("¡Nombre Inválido!");
-                    System.out.println("Ingrese un nombre del"
-                            + " siguiente listado: ");
-                    for (int j = 0; j < numProducts; j++) {
-                        System.out.print(productName[j] + "; ");
-                    }
-                    scanner.next();
-                }
+            productSoldName = scanner.next();
+            productSoldNameHistory[i] = productSoldName;
 
-                productSoldName = scanner.next();
-                productSoldNameHistory[i] = productSoldName;
+            productNotFound = true;
 
-                for (int a = 0; a < numProducts; a++) {
-                    if (productSoldName.equalsIgnoreCase(productName[a])) {
-                        System.out.println("Ingrese la cantidad vendida de '"
-                                + productName[a] + "'.");
-                        System.out.println("El Stock disponinle es de: " + productStock[a]);
-                        do {
-                            while (!scanner.hasNextInt()) {
-                                System.out.println("Ingrese un número válido.");
-                                scanner.next();
-                            }
-                            productsSoldByProduct = scanner.nextInt();
-                            productsSoldByProductHistory[i] = productsSoldByProduct;
+            for (int a = 0; a < numProducts; a++) {
+                if (productSoldName.equalsIgnoreCase(productName[a])) {
+                    System.out.println("Ingrese la cantidad vendida de '"
+                            + productName[a] + "'.");
+                    System.out.println("El Stock disponinle es de: " + productStock[a]);
+                    do {
+                        while (!scanner.hasNextInt()) {
+                            System.out.println("Ingrese un número válido.");
+                            scanner.next();
+                        }
+                        productsSoldByProduct = scanner.nextInt();
+                        productSoldQuantityHistory[i] = productsSoldByProduct;
+                        productsSoldByProductHistory[a] = productsSoldByProduct;
 
-                            if (productsSoldByProduct < 0 || productsSoldByProduct > productStock[a]) {
-                                System.out.println("Ingrese un número válido.");
-                                System.out.println("El Stock disponinle es de: " + productStock[a]);
-                            }
-                        } while (productsSoldByProduct < 0 || productsSoldByProduct > productStock[a]);
-                        // Restar el Stock vendido de cada producto.
-                        productStock[a] = productStock[a]
-                                - productsSoldByProduct;
+                        if (productsSoldByProduct < 0 || productsSoldByProduct > productStock[a]) {
+                            System.out.println("Ingrese un número válido.");
+                            System.out.println("El Stock disponinle es de: " + productStock[a]);
+                        }
+                    } while (productsSoldByProduct < 0 || productsSoldByProduct > productStock[a]);
+                    // Restar el Stock vendido de cada producto.
+                    productStock[a] = productStock[a]
+                            - productsSoldByProduct;
 
-                        // Calcular los ingresos de cada producto.                        
-                        profitOfProduct = productPrice[a]
-                                * productsSoldByProduct;
-                        // Calcular los ingresos del día.
-                        profitOfDay = profitOfDay + profitOfProduct;
-                    } else {
-                        productNotFound = true;
-                    }
+                    // Calcular los ingresos de cada producto.                        
+                    profitOfProduct = productPrice[a]
+                            * productsSoldByProduct;
+                    // Calcular los ingresos del día.
+                    profitOfDay = profitOfDay + profitOfProduct;
+                    productNotFound = false;
+                    break;
                 }
             }
+
+            if (productNotFound) {
+                System.out.println("Producto no encontrado, por favor ingrese un nombre de producto válido.");
+            }
+        }
 
         do {
             System.out.println("");
@@ -179,8 +190,8 @@ public class EjerciciosPlantilla {
                 case 2:
                     System.out.println("Total de ventas en el día: " + productsSoldInDay);
                     System.out.println("Producto----U. Vendidas");
-                    for (int i = 0; i < numProducts; i++) {
-                        System.out.println(productSoldNameHistory[i] + "--------------" + productsSoldByProductHistory[i]);
+                    for (int i = 0; i < productsSoldInDay; i++) {
+                            System.out.println(productSoldNameHistory[i] + "--------------" + productSoldQuantityHistory[i]);
                     }
                     break;
                 case 3:
